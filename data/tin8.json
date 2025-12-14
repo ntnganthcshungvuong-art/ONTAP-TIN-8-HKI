@@ -9,7 +9,8 @@
         { "text": "vi mạch tích hợp (IC)." },
         { "text": "ống chân không." }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Thế hệ 3 dùng IC (vi mạch tích hợp) → tăng tốc độ, giảm kích thước, tăng độ tin cậy."
     },
     {
       "id": "tin8_02",
@@ -20,7 +21,8 @@
         { "text": "hằng." },
         { "text": "phép toán so sánh." }
       ],
-      "answer": 3
+      "answer": 3,
+      "hint": "Toán tử so sánh (>, <, =, ≥, ≤, ≠) cho kết quả Đúng/Sai."
     },
     {
       "id": "tin8_03",
@@ -31,7 +33,8 @@
         { "text": "biểu thức logic." },
         { "text": "câu lệnh rẽ nhánh." }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Biểu thức số học dùng các phép toán +, −, ×, ÷ để tạo ra giá trị số."
     },
     {
       "id": "tin8_04",
@@ -42,7 +45,8 @@
         { "text": "văn bản dài." },
         { "text": "hình ảnh." }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Integer lưu số nguyên: … −2, −1, 0, 1, 2 … (không có phần thập phân)."
     },
     {
       "id": "tin8_05",
@@ -53,7 +57,8 @@
         { "text": "biểu diễn vùng nhớ lưu trữ giá trị." },
         { "text": "xóa dữ liệu trong chương trình." }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Biến là “nhãn” của vùng nhớ lưu dữ liệu; tên biến giúp truy cập và thay đổi giá trị."
     },
     {
       "id": "tin8_06",
@@ -64,7 +69,8 @@
         { "text": "kiểu dữ liệu." },
         { "text": "tên hàm." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Một giá trị cụ thể viết trực tiếp (100, 25, 3.14) là hằng số (literal)."
     },
     {
       "id": "tin8_07",
@@ -75,7 +81,8 @@
         { "text": "quy định dạng và phạm vi giá trị mà dữ liệu có thể nhận." },
         { "text": "xác định số vòng lặp." }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Kiểu dữ liệu quy định dạng dữ liệu và giới hạn/miền giá trị (số, xâu, logic…)."
     },
     {
       "id": "tin8_08",
@@ -86,7 +93,8 @@
         { "text": "một đoạn chương trình lặp lại." },
         { "text": "giá trị không thay đổi trong suốt chương trình." }
       ],
-      "answer": 3
+      "answer": 3,
+      "hint": "Hằng (constant) là giá trị cố định; không đổi khi chương trình chạy."
     },
     {
       "id": "tin8_09",
@@ -97,7 +105,8 @@
         { "text": "vùng nhớ có thể thay đổi giá trị trong khi chạy chương trình." },
         { "text": "một loại vòng lặp." }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Biến có giá trị thay đổi được (ví dụ: điểm, số lần lặp, vị trí nhân vật…)."
     },
     {
       "id": "tin8_10",
@@ -108,7 +117,8 @@
         { "text": "lưu dữ liệu tạm thời." },
         { "text": "định nghĩa hàm." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Dùng hằng để lưu giá trị cố định (PI, số ngày trong tuần…) giúp chương trình rõ ràng."
     },
     {
       "id": "tin8_11",
@@ -119,7 +129,8 @@
         { "text": "y" },
         { "text": "a + b" }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Hằng số là giá trị cụ thể; x, y là tên biến; a+b là biểu thức."
     },
     {
       "id": "tin8_12",
@@ -130,7 +141,8 @@
         { "text": "3" },
         { "text": "4" }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Thường gặp 3 kiểu: số (Number), xâu (String), logic (Boolean)."
     },
     {
       "id": "tin8_13",
@@ -141,7 +153,8 @@
         { "text": "“Hello”" },
         { "text": "3.14" }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Biến là tên (a, x, y…). 10 và 3.14 là hằng số; “Hello” là xâu kí tự."
     },
     {
       "id": "tin8_14",
@@ -152,7 +165,8 @@
         { "text": "đại lượng có giá trị không đổi trong quá trình thực hiện chương trình." },
         { "text": "sự kết hợp của biến, hằng, dấu ngoặc, phép toán và các hàm để trả lại giá trị thuộc một kiểu dữ liệu nhất định." }
       ],
-      "answer": 3
+      "answer": 3,
+      "hint": "Biểu thức = kết hợp biến/hằng/phép toán → trả về 1 giá trị (số, xâu, logic…)."
     },
     {
       "id": "tin8_15",
@@ -163,7 +177,8 @@
         { "text": "kí tự và xâu kí tự." },
         { "text": "hai giá trị true và false." }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Kiểu xâu gồm kí tự đơn và chuỗi kí tự (ví dụ: 'a', 'Tin học')."
     },
     {
       "id": "tin8_16",
@@ -174,7 +189,8 @@
         { "text": "giá trị." },
         { "text": "thuật toán." }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Biến được định danh bằng tên (identifier); giá trị của biến có thể thay đổi."
     },
     {
       "id": "tin8_17",
@@ -185,7 +201,8 @@
         { "text": "không cần làm bài tập." },
         { "text": "không cần ghi chép." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "CNTT hỗ trợ học online, tra cứu tài liệu nhanh, học mọi lúc mọi nơi."
     },
     {
       "id": "tin8_18",
@@ -196,7 +213,8 @@
         { "text": "4" },
         { "text": "5" }
       ],
-      "answer": 2
+      "answer": 2,
+      "hint": "Hình vuông có 4 cạnh → lặp lại thao tác “đi + quay” đúng 4 lần."
     },
     {
       "id": "tin8_19",
@@ -208,7 +226,8 @@
         { "text": "dừng toàn bộ chương trình." },
         { "text": "thay đổi màu nhân vật." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Nhóm lệnh điều kiện: “nếu … thì …” chỉ thực hiện khi điều kiện đúng."
     },
     {
       "id": "tin8_20",
@@ -219,7 +238,8 @@
         { "text": "lấy số 2 trừ n." },
         { "text": "in ra n." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Thuật toán thường bắt đầu bằng bước Nhập dữ liệu (Input) trước khi xử lí."
     },
     {
       "id": "tin8_21",
@@ -230,7 +250,8 @@
         { "text": "cộng hai cạnh lại." },
         { "text": "vẽ hình chữ nhật." }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Muốn tính S = dài × rộng thì phải nhập chiều dài và chiều rộng trước."
     },
     {
       "id": "tin8_22",
@@ -241,7 +262,8 @@
         { "image": "data/images/tin8/q22_C.png" },
         { "image": "data/images/tin8/q22_D.png" }
       ],
-      "answer": 3
+      "answer": 3,
+      "hint": "Vẽ tam giác đều: lặp 3 lần, mỗi lần đi thẳng rồi quay 120° (360°/3)."
     },
     {
       "id": "tin8_23",
@@ -252,7 +274,8 @@
         { "text": "1200" },
         { "text": "1800" }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Hình vuông: góc ngoài mỗi lần quay là 90° (360°/4)."
     },
     {
       "id": "tin8_24",
@@ -264,7 +287,8 @@
         { "text": "tính chu vi hình vuông." },
         { "text": "nhập cạnh hình chữ nhật." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Nhận biết lệnh nhập (Input): dùng để nhận dữ liệu từ người dùng (cạnh, chiều dài…)."
     },
     {
       "id": "tin8_25",
@@ -276,7 +300,8 @@
         { "text": "hình năm cạnh." },
         { "text": "hình sáu cạnh." }
       ],
-      "answer": 0
+      "answer": 0,
+      "hint": "Số cạnh phụ thuộc số lần lặp. Tam giác: lặp 3 lần, quay 120°."
     },
     {
       "id": "tin8_26",
@@ -287,7 +312,8 @@
         { "text": "các bước thực hiện công việc đó." },
         { "text": "các bước của thuật toán được thực hiện tuần tự từ trên xuống dưới." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Chương trình = dãy lệnh viết bằng ngôn ngữ lập trình để máy tính thực hiện thuật toán."
     },
     {
       "id": "tin8_27",
@@ -298,7 +324,8 @@
         { "text": "tính tổng của ba số." },
         { "text": "đổi chỗ a và b." }
       ],
-      "answer": 1
+      "answer": 1,
+      "hint": "Bước đầu của thuật toán là nhập đủ dữ liệu đầu vào: a, b, c."
     },
     {
       "id": "tin8_28",
@@ -310,7 +337,8 @@
         { "text": "tổng của hai số a và b." },
         { "text": "trung bình cộng hai số a và b." }
       ],
-      "answer": 3
+      "answer": 3,
+      "hint": "Trung bình cộng của a và b: (a + b) / 2. Nhìn khối xử lí có “+” rồi “chia 2”."
     }
   ]
 }
