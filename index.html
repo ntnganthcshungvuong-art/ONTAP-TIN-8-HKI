@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ôn tập Cuối Kỳ I - Tin học 8</title>
+  <title>ÔN TẬP CUỐI HỌC KỲ I - TIN HỌC 8</title>
   <style>
     :root{
       --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --muted:#475569;
@@ -31,12 +31,14 @@
     .good{color:var(--green)} .bad{color:var(--red)} .warnTxt{color:var(--amber)}
     .error{background:#fee2e2;border:1px solid #fecaca;color:#7f1d1d;padding:12px;border-radius:12px}
     .tiny{font-size:13px}
+    .hint{display:none;margin-top:10px;padding:10px;border-radius:12px;background:#f8fafc;border:1px dashed #cbd5e1}
+    .hint.show{display:block}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Ôn tập Cuối Kỳ I - Tin học 8</h1>
-    <div class="sub">Có xáo câu/đáp án và chấm điểm. Hỗ trợ ảnh câu hỏi &amp; ảnh đáp án.</div>
+    <h1>ÔN TẬP CUỐI HỌC KỲ I - TIN HỌC</h1>
+    <div class="sub">Có xáo câu/đáp án, chấm điểm. Gợi ý là kiến thức cô đọng theo bài học Tin 8.</div>
 
     <div class="toolbar">
       <button id="btnRetryNoShuffle" class="btn">🔁 Làm lại (giữ thứ tự)</button>
@@ -122,7 +124,7 @@ function buildQuiz(data){
   root.innerHTML = `
     <div class="card">
       <div class="q-title">PHẦN TRẮC NGHIỆM</div>
-      <div class="muted">Chọn 1 đáp án đúng cho mỗi câu.</div>
+      <div class="muted">Chọn 1 đáp án đúng cho mỗi câu. Có thể bấm “Gợi ý” để xem kiến thức liên quan.</div>
     </div>
   `;
 
@@ -143,6 +145,8 @@ function buildQuiz(data){
       `;
     }).join('');
 
+    const hintText = q.hint || "Ôn lại kiến thức liên quan trong bài học Tin học 8.";
+
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.qindex = String(idx);
@@ -150,9 +154,19 @@ function buildQuiz(data){
       <div class="q-title">Câu ${idx+1}: ${escapeHtml(q.stem)}</div>
       ${imgHtml}
       <div>${optsHtml}</div>
+
+      <div class="toolbar" style="margin-top:10px">
+        <button class="btn hint-btn" type="button">💡 Gợi ý</button>
+      </div>
+      <div class="hint"><b>Kiến thức:</b> ${escapeHtml(hintText)}</div>
+
       <div class="result tiny muted" style="margin-top:10px"></div>
     `;
     root.appendChild(card);
+
+    $('.hint-btn', card).addEventListener('click', ()=>{
+      $('.hint', card).classList.toggle('show');
+    });
   });
 }
 
