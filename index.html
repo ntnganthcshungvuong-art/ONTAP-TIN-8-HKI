@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ôn tập Cuối Học Kỳ I - Tin học 8</title>
+  <title>Ôn tập Cuối Kỳ I - Tin học 8</title>
   <style>
     :root{
       --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --muted:#475569;
-      --sky:#0ea5e9; --sky-100:#e0f2fe; --green:#10b981; --red:#ef4444;
-      --amber:#f59e0b;
+      --sky:#0ea5e9; --sky-100:#e0f2fe; --green:#10b981; --red:#ef4444; --amber:#f59e0b;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
@@ -36,8 +35,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>Ôn tập Cuối Học Kỳ I - Tin học 8</h1>
-    <div class="sub">Có xáo câu/đáp án và chấm điểm. (Bản “siêu chắc” chống lỗi đường dẫn & JSON)</div>
+    <h1>Ôn tập Cuối Kỳ I - Tin học 8</h1>
+    <div class="sub">Có xáo câu/đáp án và chấm điểm. Hỗ trợ ảnh câu hỏi &amp; ảnh đáp án.</div>
 
     <div class="toolbar">
       <button id="btnRetryNoShuffle" class="btn">🔁 Làm lại (giữ thứ tự)</button>
@@ -52,9 +51,10 @@
   </div>
 
 <script>
-let ORIGINAL_DATA=null, CURRENT_DATA=null;
+let ORIGINAL_DATA = null;
+let CURRENT_DATA  = null;
 
-const $ = (s, r=document)=>r.querySelector(s);
+const $  = (s, r=document)=>r.querySelector(s);
 const $$ = (s, r=document)=>[...r.querySelectorAll(s)];
 const clone = o => JSON.parse(JSON.stringify(o));
 
@@ -72,114 +72,49 @@ function shuffleArray(a){
 function setStatus(msg){ $('#status').textContent = msg || ''; }
 function setScore(c,t){ $('#score .score').textContent = `${c}/${t}`; }
 
-function normalizeImagePath(p){
-  if(!p) return null;
-  if(p.startsWith('data/')) return p;
-  if(p.startsWith('images/')) return 'data/' + p; // repo bạn đang để ảnh trong data/images/...
-  return p;
+async function loadData(){
+  try{
+    setStatus('Đang tải dữ liệu...');
+    const res = await fetch('data/tin8.json?ts=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status} khi tải data/tin8.json`);
+    const raw = await res.json();
+    if(!raw || !Array.isArray(raw.mcqs)) throw new Error('JSON phải có dạng { "mcqs": [ ... ] }');
+    ORIGINAL_DATA = raw;
+    render(ORIGINAL_DATA, false);
+    setStatus('Đã tải xong.');
+  }catch(err){
+    console.error(err);
+    $('#quiz').innerHTML = `
+      <div class="card error">
+        <b>Lỗi tải dữ liệu.</b>
+        <div class="tiny">Kiểm tra <code>data/tin8.json</code> đúng vị trí và JSON hợp lệ.</div>
+        <div class="tiny">Chi tiết: ${escapeHtml(err.message)}</div>
+      </div>
+    `;
+    setStatus('Lỗi tải dữ liệu.');
+    setScore(0,0);
+  }
 }
 
-// Chấp nhận 2 format:
-// (1) { mcqs:[{stem, options:[{text|image}], answer, img?}], essay?:[] }
-// (2) mảng [{question, choices:[{text,image?}], answer:"A"|0|null, questionImage?}]
-function normalize(raw){
-  if(raw && typeof raw === 'object' && Array.isArray(raw.mcqs)){
-    raw.mcqs.forEach(q=>{
-      if(q.img) q.img = normalizeImagePath(q.img);
-      q.options = (q.options||[]).map(o=>{
-        if(o?.image) o.image = normalizeImagePath(o.image);
-        return o;
-      });
-    });
-    return raw;
-  }
-  if(Array.isArray(raw)){
-    const mcqs = raw.map(item=>{
-      const stem = item.question ?? item.stem ?? '';
-      const img  = normalizeImagePath(item.questionImage ?? item.img);
-      const options = (item.choices || item.options || []).map(ch=>{
-        return {
-          text: ch.text ?? ch,
-          image: normalizeImagePath(ch.image)
-        };
-      });
-
-      let ans = item.answer;
-      let answerIndex = null;
-      if(typeof ans === 'number') answerIndex = ans;
-      if(typeof ans === 'string'){
-        const map={A:0,B:1,C:2,D:3};
-        const s=ans.trim().toUpperCase();
-        if(map[s]!==undefined) answerIndex = map[s];
-      }
-      // nếu null => không chấm (nhưng vẫn hiển thị câu)
-      return { id:item.id ?? '', stem, img, options, answer: answerIndex };
-    });
-    return { mcqs, essay: [] };
-  }
-  return { mcqs: [], essay: [] };
-}
-
-async function fetchJsonTry(url){
-  const bust = (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-  const u = url + bust;
-  const res = await fetch(u, {cache:'no-store'});
-  if(!res.ok) throw new Error(`HTTP ${res.status} khi tải ${url}`);
-  return await res.json();
-}
-
-async function loadDataRobust(){
-  const candidates = ['data/tin8.json','./data/tin8.json','tin8.json','./tin8.json'];
-  let lastErr = null;
-
-  for(const u of candidates){
-    try{
-      setStatus('Đang tải: ' + u);
-      const raw = await fetchJsonTry(u);
-      const data = normalize(raw);
-      if(!data.mcqs || !Array.isArray(data.mcqs)) throw new Error('JSON không có mcqs hợp lệ');
-      ORIGINAL_DATA = data;
-      render(ORIGINAL_DATA,false);
-      setStatus('Đã tải OK từ: ' + u);
-      return;
-    }catch(e){
-      lastErr = e;
-    }
-  }
-
-  // fail all
-  $('#quiz').innerHTML = `
-    <div class="card error">
-      <b>Lỗi tải dữ liệu.</b>
-      <div class="tiny">Không load được tin8.json theo các đường dẫn: <code>${escapeHtml(candidates.join(', '))}</code></div>
-      <div class="tiny"><b>Chi tiết:</b> ${escapeHtml(lastErr?.message || 'Unknown error')}</div>
-      <div class="tiny">Mẹo: mở thử trực tiếp <code>/data/tin8.json</code> trên trình duyệt để xem có 404 hoặc lỗi JSON.</div>
-    </div>
-  `;
-  setStatus('Lỗi tải dữ liệu.');
-  setScore(0,0);
+// options: [{text? , image?}] ; answer: 0-3
+function shuffleOptions(q){
+  const pairs = q.options.map((opt,i)=>({opt,i}));
+  shuffleArray(pairs);
+  q.options = pairs.map(p=>p.opt);
+  q.answer  = pairs.findIndex(p=>p.i===q.answer);
 }
 
 function render(raw, doShuffle){
   const data = clone(raw);
   if(doShuffle){
     shuffleArray(data.mcqs);
-    data.mcqs.forEach(q=>{
-      // shuffle options
-      const pairs = q.options.map((opt,i)=>({opt,i}));
-      shuffleArray(pairs);
-      q.options = pairs.map(p=>p.opt);
-      if(q.answer!==null && q.answer!==undefined){
-        q.answer = pairs.findIndex(p=>p.i===q.answer);
-      }
-    });
+    data.mcqs.forEach(shuffleOptions);
   }
   CURRENT_DATA = data;
   buildQuiz(CURRENT_DATA);
   clearMarks();
-  const total = CURRENT_DATA.mcqs.length;
-  setScore(0,total);
-  window.scrollTo({top:0,behavior:'smooth'});
+  setScore(0, CURRENT_DATA.mcqs.length);
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function buildQuiz(data){
@@ -193,11 +128,12 @@ function buildQuiz(data){
 
   data.mcqs.forEach((q,idx)=>{
     const qid = `q${idx}`;
-    const imgHtml = q.img ? `<img class="q-img" src="${escapeHtml(normalizeImagePath(q.img))}" alt="minh họa">` : '';
-    const optsHtml = (q.options||[]).map((opt,oi)=>{
+    const imgHtml = q.img ? `<img class="q-img" src="${escapeHtml(q.img)}" alt="minh họa">` : '';
+
+    const optsHtml = q.options.map((opt,oi)=>{
       const label = String.fromCharCode(65+oi);
       const body = opt.image
-        ? `<img src="${escapeHtml(normalizeImagePath(opt.image))}" alt="Đáp án ${label}">`
+        ? `<img src="${escapeHtml(opt.image)}" alt="Đáp án ${label}">`
         : `<span>${escapeHtml(opt.text ?? '')}</span>`;
       return `
         <label class="opt">
@@ -234,24 +170,18 @@ function grade(){
   if(!CURRENT_DATA?.mcqs?.length) return;
   clearMarks();
 
-  let correct=0, total=0;
+  let correct=0;
+  const total=CURRENT_DATA.mcqs.length;
 
   $$('.card[data-qindex]').forEach(card=>{
     const i = Number(card.dataset.qindex);
     const q = CURRENT_DATA.mcqs[i];
+
     const title = $('.q-title',card);
     const base = title.getAttribute('data-base-html') || title.innerHTML;
 
     const picked = card.querySelector(`input[name="q${i}"]:checked`);
     const pickedIndex = picked ? Number(picked.value) : null;
-
-    if(q.answer===null || q.answer===undefined){
-      title.innerHTML = `${base} <span class="warnTxt">⚠ Chưa có đáp án</span>`;
-      $('.result',card).textContent = pickedIndex===null ? 'Bạn chưa chọn.' : `Bạn chọn: ${String.fromCharCode(65+pickedIndex)}.`;
-      return;
-    }
-
-    total++;
     const ans = Number(q.answer);
 
     if(pickedIndex===null){
@@ -270,7 +200,7 @@ function grade(){
 
   setScore(correct,total);
   setStatus(`Đã chấm: ${correct}/${total}`);
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -282,7 +212,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     setScore(0, CURRENT_DATA?.mcqs?.length ?? 0);
     setStatus('Đã xóa nhãn.');
   });
-  loadDataRobust();
+  loadData();
 });
 </script>
 </body>
