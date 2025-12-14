@@ -4,10 +4,10 @@
       "id": "tin8_01",
       "stem": "Máy tính thế hệ thứ ba sử dụng công nghệ để tăng tốc độ xử lý là",
       "options": [
-        {"text": "bóng đèn điện tử."},
-        {"text": "bộ xử lý lượng tử."},
-        {"text": "vi mạch tích hợp (IC)."},
-        {"text": "ống chân không."}
+        { "text": "bóng đèn điện tử." },
+        { "text": "bộ xử lý lượng tử." },
+        { "text": "vi mạch tích hợp (IC)." },
+        { "text": "ống chân không." }
       ],
       "answer": 2
     },
@@ -15,10 +15,10 @@
       "id": "tin8_02",
       "stem": "Trong một biểu thức, dấu “>” là",
       "options": [
-        {"text": "kiểu dữ liệu."},
-        {"text": "tên biến."},
-        {"text": "hằng."},
-        {"text": "phép toán so sánh."}
+        { "text": "kiểu dữ liệu." },
+        { "text": "tên biến." },
+        { "text": "hằng." },
+        { "text": "phép toán so sánh." }
       ],
       "answer": 3
     },
@@ -26,10 +26,10 @@
       "id": "tin8_03",
       "stem": "Biểu thức “a + b” thuộc",
       "options": [
-        {"text": "biểu thức số học."},
-        {"text": "biểu thức so sánh."},
-        {"text": "biểu thức logic."},
-        {"text": "câu lệnh rẽ nhánh."}
+        { "text": "biểu thức số học." },
+        { "text": "biểu thức so sánh." },
+        { "text": "biểu thức logic." },
+        { "text": "câu lệnh rẽ nhánh." }
       ],
       "answer": 0
     },
@@ -37,10 +37,10 @@
       "id": "tin8_04",
       "stem": "Kiểu dữ liệu số nguyên (integer) dùng để lưu trữ",
       "options": [
-        {"text": "các số không có phần thập phân."},
-        {"text": "chuỗi ký tự."},
-        {"text": "văn bản dài."},
-        {"text": "hình ảnh."}
+        { "text": "các số không có phần thập phân." },
+        { "text": "chuỗi ký tự." },
+        { "text": "văn bản dài." },
+        { "text": "hình ảnh." }
       ],
       "answer": 0
     },
@@ -48,10 +48,10 @@
       "id": "tin8_05",
       "stem": "Tên biến thường dùng để",
       "options": [
-        {"text": "gọi một đoạn văn bản."},
-        {"text": "thay thế cho các phép toán."},
-        {"text": "biểu diễn vùng nhớ lưu trữ giá trị."},
-        {"text": "xóa dữ liệu trong chương trình."}
+        { "text": "gọi một đoạn văn bản." },
+        { "text": "thay thế cho các phép toán." },
+        { "text": "biểu diễn vùng nhớ lưu trữ giá trị." },
+        { "text": "xóa dữ liệu trong chương trình." }
       ],
       "answer": 2
     },
@@ -59,10 +59,10 @@
       "id": "tin8_06",
       "stem": "Giá trị 100 trong chương trình thường được xem là",
       "options": [
-        {"text": "biến."},
-        {"text": "hằng số."},
-        {"text": "kiểu dữ liệu."},
-        {"text": "tên hàm."}
+        { "text": "biến." },
+        { "text": "hằng số." },
+        { "text": "kiểu dữ liệu." },
+        { "text": "tên hàm." }
       ],
       "answer": 1
     },
@@ -70,10 +70,10 @@
       "id": "tin8_07",
       "stem": "Kiểu dữ liệu dùng để",
       "options": [
-        {"text": "quy định dữ liệu được in màu gì."},
-        {"text": "tăng tốc độ chạy chương trình."},
-        {"text": "quy định dạng và phạm vi giá trị mà dữ liệu có thể nhận."},
-        {"text": "xác định số vòng lặp."}
+        { "text": "quy định dữ liệu được in màu gì." },
+        { "text": "tăng tốc độ chạy chương trình." },
+        { "text": "quy định dạng và phạm vi giá trị mà dữ liệu có thể nhận." },
+        { "text": "xác định số vòng lặp." }
       ],
       "answer": 2
     },
@@ -81,10 +81,10 @@
       "id": "tin8_08",
       "stem": "Trong lập trình, hằng là",
       "options": [
-        {"text": "giá trị có thể thay đổi."},
-        {"text": "một tên hàm."},
-        {"text": "một đoạn chương trình lặp lại."},
-        {"text": "giá trị không thay đổi trong suốt chương trình."}
+        { "text": "giá trị có thể thay đổi." },
+        { "text": "một tên hàm." },
+        { "text": "một đoạn chương trình lặp lại." },
+        { "text": "giá trị không thay đổi trong suốt chương trình." }
       ],
       "answer": 3
     },
@@ -92,10 +92,10 @@
       "id": "tin8_09",
       "stem": "Trong lập trình, biến là",
       "options": [
-        {"text": "một giá trị luôn cố định."},
-        {"text": "dữ liệu chỉ dùng một lần."},
-        {"text": "vùng nhớ có thể thay đổi giá trị trong khi chạy chương trình."},
-        {"text": "một loại vòng lặp."}
+        { "text": "một giá trị luôn cố định." },
+        { "text": "dữ liệu chỉ dùng một lần." },
+        { "text": "vùng nhớ có thể thay đổi giá trị trong khi chạy chương trình." },
+        { "text": "một loại vòng lặp." }
       ],
       "answer": 2
     },
@@ -103,10 +103,10 @@
       "id": "tin8_10",
       "stem": "Hằng có thể được sử dụng để",
       "options": [
-        {"text": "thay đổi giá trị sau khi khai báo."},
-        {"text": "lưu giá trị cố định để chương trình sử dụng."},
-        {"text": "lưu dữ liệu tạm thời."},
-        {"text": "định nghĩa hàm."}
+        { "text": "thay đổi giá trị sau khi khai báo." },
+        { "text": "lưu giá trị cố định để chương trình sử dụng." },
+        { "text": "lưu dữ liệu tạm thời." },
+        { "text": "định nghĩa hàm." }
       ],
       "answer": 1
     },
@@ -114,10 +114,10 @@
       "id": "tin8_11",
       "stem": "Trong các ví dụ dưới đây, hằng số là",
       "options": [
-        {"text": "x"},
-        {"text": "25"},
-        {"text": "y"},
-        {"text": "a + b"}
+        { "text": "x" },
+        { "text": "25" },
+        { "text": "y" },
+        { "text": "a + b" }
       ],
       "answer": 1
     },
@@ -125,10 +125,10 @@
       "id": "tin8_12",
       "stem": "Có mấy kiểu dữ liệu phổ biến trong ngôn ngữ lập trình trực quan?",
       "options": [
-        {"text": "1"},
-        {"text": "2"},
-        {"text": "3"},
-        {"text": "4"}
+        { "text": "1" },
+        { "text": "2" },
+        { "text": "3" },
+        { "text": "4" }
       ],
       "answer": 2
     },
@@ -136,10 +136,10 @@
       "id": "tin8_13",
       "stem": "Trong các ví dụ dưới đây, biến số là",
       "options": [
-        {"text": "a"},
-        {"text": "10"},
-        {"text": "“Hello”"},
-        {"text": "3.14"}
+        { "text": "a" },
+        { "text": "10" },
+        { "text": "“Hello”" },
+        { "text": "3.14" }
       ],
       "answer": 0
     },
@@ -147,10 +147,10 @@
       "id": "tin8_14",
       "stem": "Biểu thức là",
       "options": [
-        {"text": "các lệnh viết bằng ngôn ngữ lập trình chỉ dẫn máy tính thực hiện các bước của thuật toán."},
-        {"text": "giá trị có thể thay đổi trong quá trình thực hiện chương trình."},
-        {"text": "đại lượng có giá trị không đổi trong quá trình thực hiện chương trình."},
-        {"text": "sự kết hợp của biến, hằng, dấu ngoặc, phép toán và các hàm để trả lại giá trị thuộc một kiểu dữ liệu nhất định."}
+        { "text": "các lệnh viết bằng ngôn ngữ lập trình chỉ dẫn máy tính thực hiện các bước của thuật toán." },
+        { "text": "giá trị có thể thay đổi trong quá trình thực hiện chương trình." },
+        { "text": "đại lượng có giá trị không đổi trong quá trình thực hiện chương trình." },
+        { "text": "sự kết hợp của biến, hằng, dấu ngoặc, phép toán và các hàm để trả lại giá trị thuộc một kiểu dữ liệu nhất định." }
       ],
       "answer": 3
     },
@@ -158,10 +158,10 @@
       "id": "tin8_15",
       "stem": "Tập hợp các giá trị của kiểu xâu kí tự là",
       "options": [
-        {"text": "số nguyên và số thập phân."},
-        {"text": "xâu kí tự và số thập phân."},
-        {"text": "kí tự và xâu kí tự."},
-        {"text": "hai giá trị true và false."}
+        { "text": "số nguyên và số thập phân." },
+        { "text": "xâu kí tự và số thập phân." },
+        { "text": "kí tự và xâu kí tự." },
+        { "text": "hai giá trị true và false." }
       ],
       "answer": 2
     },
@@ -169,10 +169,10 @@
       "id": "tin8_16",
       "stem": "Biến được nhận biết qua",
       "options": [
-        {"text": "tên."},
-        {"text": "phép toán."},
-        {"text": "giá trị."},
-        {"text": "thuật toán."}
+        { "text": "tên." },
+        { "text": "phép toán." },
+        { "text": "giá trị." },
+        { "text": "thuật toán." }
       ],
       "answer": 0
     },
@@ -180,5 +180,137 @@
       "id": "tin8_17",
       "stem": "Nhờ sự phát triển của máy tính, hoạt động học tập của học sinh thay đổi vì",
       "options": [
-        {"text": "học sinh không cần đến trường."},
-        {"text": "có thể học trực tuyến và tìm tài liệu nhanh chóng."},
+        { "text": "học sinh không cần đến trường." },
+        { "text": "có thể học trực tuyến và tìm tài liệu nhanh chóng." },
+        { "text": "không cần làm bài tập." },
+        { "text": "không cần ghi chép." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_18",
+      "stem": "Để vẽ một hình vuông bằng Scratch, khối lệnh lặp lại cần đặt số lần là",
+      "options": [
+        { "text": "2" },
+        { "text": "3" },
+        { "text": "4" },
+        { "text": "5" }
+      ],
+      "answer": 2
+    },
+    {
+      "id": "tin8_19",
+      "stem": "Khối lệnh bên được dùng để",
+      "img": "data/images/tin8/q19.png",
+      "options": [
+        { "text": "lặp lại mãi mãi." },
+        { "text": "thực hiện một hành động khi điều kiện đúng." },
+        { "text": "dừng toàn bộ chương trình." },
+        { "text": "thay đổi màu nhân vật." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_20",
+      "stem": "Thuật toán kiểm tra một số nguyên n có chẵn hay không cần bắt đầu bằng",
+      "options": [
+        { "text": "chia n cho 3." },
+        { "text": "nhập vào giá trị của n." },
+        { "text": "lấy số 2 trừ n." },
+        { "text": "in ra n." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_21",
+      "stem": "Thuật toán tính diện tích hình chữ nhật cần bắt đầu bằng",
+      "options": [
+        { "text": "nhập vào chiều dài và chiều rộng." },
+        { "text": "nhân chiều dài với 2." },
+        { "text": "cộng hai cạnh lại." },
+        { "text": "vẽ hình chữ nhật." }
+      ],
+      "answer": 0
+    },
+    {
+      "id": "tin8_22",
+      "stem": "Chương trình Scratch thực hiện thuật toán điều khiển nhân vật đi theo hình tam giác",
+      "options": [
+        { "image": "data/images/tin8/q22_A.png" },
+        { "image": "data/images/tin8/q22_B.png" },
+        { "image": "data/images/tin8/q22_C.png" },
+        { "image": "data/images/tin8/q22_D.png" }
+      ],
+      "answer": 3
+    },
+    {
+      "id": "tin8_23",
+      "stem": "Với trường hợp nhân vật di chuyển theo đường đi là một hình vuông thì góc quay của nhân vật khi đi hết một cạnh là",
+      "options": [
+        { "text": "600" },
+        { "text": "900" },
+        { "text": "1200" },
+        { "text": "1800" }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_24",
+      "stem": "Câu lệnh bên dùng để",
+      "img": "data/images/tin8/q24.png",
+      "options": [
+        { "text": "tính diện tích hình vuông." },
+        { "text": "nhập cạnh hình vuông." },
+        { "text": "tính chu vi hình vuông." },
+        { "text": "nhập cạnh hình chữ nhật." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_25",
+      "stem": "Kết quả thực hiện của đoạn lệnh sau là vẽ",
+      "img": "data/images/tin8/q25.png",
+      "options": [
+        { "text": "hình ba cạnh." },
+        { "text": "hình bốn cạnh." },
+        { "text": "hình năm cạnh." },
+        { "text": "hình sáu cạnh." }
+      ],
+      "answer": 0
+    },
+    {
+      "id": "tin8_26",
+      "stem": "Chương trình máy tính là",
+      "options": [
+        { "text": "các lệnh trong chương trình được thực hiện tuần tự từ trên xuống dưới." },
+        { "text": "dãy các lệnh điều khiển máy tính thực hiện một thuật toán." },
+        { "text": "các bước thực hiện công việc đó." },
+        { "text": "các bước của thuật toán được thực hiện tuần tự từ trên xuống dưới." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_27",
+      "stem": "Thuật toán tìm số lớn nhất trong ba số a, b, c cần bắt đầu bằng",
+      "options": [
+        { "text": "kiểm tra a có bằng 0 không." },
+        { "text": "nhập vào ba số a, b, c." },
+        { "text": "tính tổng của ba số." },
+        { "text": "đổi chỗ a và b." }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "tin8_28",
+      "stem": "Sơ đồ khối ở hình dưới thực hiện tính",
+      "img": "data/images/tin8/q28.png",
+      "options": [
+        { "text": "thương của hai số a và b." },
+        { "text": "tích của hai số a và b." },
+        { "text": "tổng của hai số a và b." },
+        { "text": "trung bình cộng hai số a và b." }
+      ],
+      "answer": 3
+    }
+  ]
+}
