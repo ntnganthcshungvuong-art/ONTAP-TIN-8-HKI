@@ -8,19 +8,21 @@
     :root{
       --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --muted:#475569;
       --sky:#0ea5e9; --sky-100:#e0f2fe; --green:#10b981; --red:#ef4444;
+      --amber:#f59e0b;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
     .container{max-width:980px;margin:32px auto;padding:0 16px}
     h1{margin:8px 0 6px;color:var(--ink);font-weight:800}
     .sub{color:var(--muted);margin-bottom:12px}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 18px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 18px;align-items:center}
     .btn{border:0;border-radius:10px;padding:10px 14px;background:var(--sky-100);color:#0c4a6e;cursor:pointer}
     .btn:hover{filter:brightness(0.98)}
     .btn.primary{background:var(--sky);color:#fff}
+    .btn.warn{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
     .card{background:var(--card);border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 10px rgba(2,8,23,.06)}
     .q-title{font-weight:700;margin-bottom:10px}
-    .q-img{max-width:100%;height:auto;display:block;margin:10px 0}
+    .q-img{max-width:100%;height:auto;display:block;margin:10px 0;border-radius:10px;border:1px solid #e2e8f0}
     .opt{display:flex;gap:8px;align-items:flex-start;margin:6px 0;padding:8px;border-radius:10px;transition:.15s}
     .opt:hover{background:#f1f5f9}
     .muted{color:var(--muted)}
@@ -30,20 +32,25 @@
     .score{font-weight:800}
     .footer-note{margin-top:22px;color:var(--muted);font-size:13px}
     .essay-box{width:100%;min-height:110px;border:1px solid #e2e8f0;border-radius:10px;padding:10px}
-    .good{color:var(--green)} .bad{color:var(--red)}
+    .good{color:var(--green)} .bad{color:var(--red)} .warnTxt{color:var(--amber)}
     .hr{height:1px;background:#e2e8f0;margin:18px 0}
+    .error{background:#fee2e2;border:1px solid #fecaca;color:#7f1d1d;padding:12px;border-radius:12px}
+    .tiny{font-size:13px}
+    .explain{margin-top:8px;padding:10px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Ôn tập Giữa Kì I – Tin học 8</h1>
-    <div class="sub">Theo SGK <b>Kết nối tri thức với cuộc sống</b>. Có 30 câu trắc nghiệm + 2 câu tự luận, hỗ trợ gợi ý &amp; làm lại.</div>
+    <div class="sub">Theo SGK <b>Kết nối tri thức với cuộc sống</b>. Trắc nghiệm + tự luận, có gợi ý, xáo câu &amp; chấm điểm.</div>
 
     <div class="toolbar">
       <button id="btnRetryNoShuffle" class="btn">🔁 Làm lại (giữ thứ tự)</button>
       <button id="btnRetryShuffle" class="btn">🎲 Làm lại (xáo câu &amp; đáp án)</button>
       <button id="btnGrade" class="btn primary">✅ Chấm điểm trắc nghiệm</button>
+      <button id="btnClearMarks" class="btn warn">🧹 Xóa nhãn đúng/sai</button>
       <span id="score" class="pill">Điểm: <span class="score">0/0</span></span>
+      <span id="status" class="muted tiny"></span>
     </div>
 
     <div id="quiz"></div>
@@ -52,139 +59,258 @@
   </div>
 
   <script>
-  let ORIGINAL_DATA = null;
+    // -------------------------
+    // State
+    // -------------------------
+    let ORIGINAL_DATA = null; // dữ liệu gốc từ JSON
+    let CURRENT_DATA  = null; // dữ liệu đang hiển thị (đã xáo nếu có)
 
-  // Fisher–Yates
-  function shuffleArray(a){
-    for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
+    // -------------------------
+    // Helpers
+    // -------------------------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+    const clone = o => JSON.parse(JSON.stringify(o));
+
+    // Fisher–Yates
+    function shuffleArray(a){
+      for(let i=a.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
     }
-  }
-  const clone = o => JSON.parse(JSON.stringify(o));
 
-  function shuffleOptions(q){
-    const pairs = q.options.map((t,i)=>({t,i}));
-    shuffleArray(pairs);
-    q.options = pairs.map(p=>p.t);
-    q.answer = pairs.findIndex(p=>p.i===q.answer);
-  }
-
-  async function loadData(){
-    const res = await fetch('data/tin8.json');
-    ORIGINAL_DATA = await res.json();
-    render(ORIGINAL_DATA, false);
-  }
-
-  function render(raw, doShuffle){
-    const data = clone(raw);
-    if(doShuffle){
-      shuffleArray(data.mcqs);
-      data.mcqs.forEach(shuffleOptions);
+    function shuffleOptions(q){
+      const pairs = q.options.map((t,i)=>({t,i}));
+      shuffleArray(pairs);
+      q.options = pairs.map(p=>p.t);
+      q.answer  = pairs.findIndex(p=>p.i===q.answer);
     }
-    buildQuiz(data);
-  }
 
-  function buildQuiz(data){
-    const root = document.getElementById('quiz');
-    root.innerHTML = '';
+    function setStatus(msg){
+      $('#status').textContent = msg || '';
+    }
 
-    // --- Phần TRẮC NGHIỆM ---
-    const mcWrap = document.createElement('div');
-    mcWrap.innerHTML = `<div class="card"><div class="q-title">PHẦN TRẮC NGHIỆM</div>
-                        <div class="muted">Chọn 1 đáp án đúng cho mỗi câu.</div></div>`;
-    root.appendChild(mcWrap.firstChild);
+    function setScore(correct, total){
+      $('#score .score').textContent = `${correct}/${total}`;
+    }
 
-    data.mcqs.forEach((q, idx)=>{
-      const card = document.createElement('div');
-      card.className = 'card';
-      const qid = `q${idx}`;
+    function escapeHtml(s){
+      return String(s ?? '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
 
-      card.innerHTML = `
-        <div class="q-title">Câu ${idx+1}: ${q.stem}</div>
-        ${q.img ? `<img class="q-img" src="${q.img}" alt="minh họa">` : ``}
-        <div>${q.options.map((opt,oi)=>`
+    // -------------------------
+    // Load + Render
+    // -------------------------
+    async function loadData(){
+      try{
+        setStatus('Đang tải dữ liệu...');
+        const res = await fetch('data/tin8.json', {cache:'no-store'});
+        if(!res.ok) throw new Error(`Không tải được data/tin8.json (HTTP ${res.status})`);
+        ORIGINAL_DATA = await res.json();
+        render(ORIGINAL_DATA, false);
+        setStatus('Đã tải xong.');
+      }catch(err){
+        console.error(err);
+        $('#quiz').innerHTML = `
+          <div class="card error">
+            <b>Lỗi tải dữ liệu.</b>
+            <div class="tiny">Hãy kiểm tra file <code>data/tin8.json</code> có tồn tại đúng vị trí và GitHub Pages đã bật.</div>
+            <div class="tiny">Chi tiết: ${escapeHtml(err.message)}</div>
+          </div>
+        `;
+        setStatus('Lỗi tải dữ liệu.');
+        setScore(0,0);
+      }
+    }
+
+    function render(raw, doShuffle){
+      if(!raw) return;
+      const data = clone(raw);
+
+      if(doShuffle){
+        shuffleArray(data.mcqs);
+        data.mcqs.forEach(shuffleOptions);
+      }
+
+      CURRENT_DATA = data;      // ✅ quan trọng: chấm theo data đang hiển thị
+      buildQuiz(CURRENT_DATA);  // render UI
+      clearMarks();             // reset nhãn đúng/sai
+      setScore(0, CURRENT_DATA.mcqs.length);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // -------------------------
+    // UI Builder
+    // -------------------------
+    function buildQuiz(data){
+      const root = $('#quiz');
+      root.innerHTML = '';
+
+      // --- PHẦN TRẮC NGHIỆM ---
+      root.insertAdjacentHTML('beforeend', `
+        <div class="card">
+          <div class="q-title">PHẦN TRẮC NGHIỆM</div>
+          <div class="muted">Chọn 1 đáp án đúng cho mỗi câu.</div>
+        </div>
+      `);
+
+      data.mcqs.forEach((q, idx)=>{
+        const qid = `q${idx}`;
+        const imgHtml = q.img ? `<img class="q-img" src="${escapeHtml(q.img)}" alt="minh họa câu ${idx+1}">` : '';
+
+        const optsHtml = q.options.map((opt, oi)=>`
           <label class="opt">
             <input type="radio" name="${qid}" value="${oi}"/>
-            <span>${String.fromCharCode(65+oi)}. ${opt}</span>
-          </label>`).join('')}</div>
-        <div class="toolbar" style="margin-top:8px">
-          <button class="btn hint-btn">Gợi ý</button>
-        </div>
-        <div class="hint">${q.hint || 'Hãy suy luận dựa trên khái niệm trong bài học.'}</div>
-      `;
-      root.appendChild(card);
-      card.querySelector('.hint-btn').addEventListener('click', ()=>{
-        card.querySelector('.hint').classList.toggle('show');
+            <span>${String.fromCharCode(65+oi)}. ${escapeHtml(opt)}</span>
+          </label>
+        `).join('');
+
+        const hintText = q.hint ? escapeHtml(q.hint) : 'Hãy suy luận dựa trên khái niệm trong bài học.';
+
+        const explainHtml = q.explain ? `<div class="explain tiny"><b>Giải thích:</b> ${escapeHtml(q.explain)}</div>` : '';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.qindex = String(idx);
+
+        card.innerHTML = `
+          <div class="q-title" data-base="1">Câu ${idx+1}: ${escapeHtml(q.stem)}</div>
+          ${imgHtml}
+          <div>${optsHtml}</div>
+
+          <div class="toolbar" style="margin-top:8px">
+            <button class="btn hint-btn" type="button">💡 Gợi ý</button>
+          </div>
+          <div class="hint">${hintText}</div>
+
+          <div class="result tiny muted" style="margin-top:10px"></div>
+          <div class="explain-wrap" style="display:none">${explainHtml}</div>
+        `;
+        root.appendChild(card);
+
+        $('.hint-btn', card).addEventListener('click', ()=>{
+          $('.hint', card).classList.toggle('show');
+        });
       });
-    });
 
-    // --- Phần TỰ LUẬN ---
-    const es = document.createElement('div');
-    es.innerHTML = `<div class="card"><div class="q-title">PHẦN TỰ LUẬN</div>
-                    <div class="muted">Trả lời ngắn gọn, nêu rõ luận điểm &amp; ví dụ.</div></div>`;
-    root.appendChild(es.firstChild);
+      // --- PHẦN TỰ LUẬN (nếu có trong JSON) ---
+      if(Array.isArray(data.essay) && data.essay.length){
+        root.insertAdjacentHTML('beforeend', `
+          <div class="card">
+            <div class="q-title">PHẦN TỰ LUẬN</div>
+            <div class="muted">Trả lời ngắn gọn, nêu rõ luận điểm &amp; ví dụ.</div>
+          </div>
+        `);
 
-    data.essay.forEach((e, i)=>{
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="q-title">${e.title}</div>
-        <div class="muted" style="white-space:pre-line">${e.prompt}</div>
-        <textarea class="essay-box" placeholder="Nhập câu trả lời của em..."></textarea>
-        <div class="hr"></div>
-        <details>
-          <summary class="muted">Gợi ý chấm/ý chính</summary>
-          <div class="hint show" style="display:block">${e.rubric}</div>
-        </details>
-      `;
-      root.appendChild(card);
-    });
-
-    // Cập nhật tổng số câu
-    const scoreTag = document.querySelector('#score .score');
-    scoreTag.textContent = `0/${data.mcqs.length}`;
-  }
-
-  function grade(){
-    const cards = [...document.querySelectorAll('#quiz .card')];
-    let iQ = 0, correct = 0, total = 0;
-
-    cards.forEach(card=>{
-      const title = card.querySelector('.q-title');
-      if(!title || !title.textContent.trim().startsWith('Câu ')) return;
-
-      const name = 'q'+iQ;
-      const picked = card.querySelector(`input[name="${name}"]:checked`);
-      const ansIndex = window.__DATA_CURRENT?.mcqs?.[iQ]?.answer ?? null;
-
-      if(ansIndex!==null){
-        total++;
-        if(picked && +picked.value === +ansIndex){
-          correct++;
-          title.innerHTML = title.innerHTML.replace(/$/, ` <span class="good">✔ Đúng</span>`);
-        }else{
-          title.innerHTML = title.innerHTML.replace(/$/, ` <span class="bad">✘ Sai</span>`);
-        }
+        data.essay.forEach((e)=>{
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="q-title">${escapeHtml(e.title || 'Tự luận')}</div>
+            <div class="muted" style="white-space:pre-line">${escapeHtml(e.prompt || '')}</div>
+            <textarea class="essay-box" placeholder="Nhập câu trả lời của em..."></textarea>
+            <div class="hr"></div>
+            <details>
+              <summary class="muted">Gợi ý chấm/ý chính</summary>
+              <div class="hint show" style="display:block">${escapeHtml(e.rubric || '')}</div>
+            </details>
+          `;
+          root.appendChild(card);
+        });
       }
-      iQ++;
+    }
+
+    // -------------------------
+    // Grading
+    // -------------------------
+    function clearMarks(){
+      // xóa nhãn đúng/sai cũ
+      $$('.card[data-qindex]').forEach(card=>{
+        const title = $('.q-title', card);
+        const base = title.getAttribute('data-base-html');
+        if(base){
+          title.innerHTML = base;
+        }else{
+          // lưu bản gốc lần đầu
+          title.setAttribute('data-base-html', title.innerHTML);
+        }
+        const result = $('.result', card);
+        result.textContent = '';
+        const exWrap = $('.explain-wrap', card);
+        if(exWrap) exWrap.style.display = 'none';
+      });
+    }
+
+    function grade(){
+      if(!CURRENT_DATA || !Array.isArray(CURRENT_DATA.mcqs)) return;
+
+      clearMarks();
+
+      let correct = 0;
+      const total = CURRENT_DATA.mcqs.length;
+
+      $$('.card[data-qindex]').forEach(card=>{
+        const iQ = Number(card.dataset.qindex);
+        const q  = CURRENT_DATA.mcqs[iQ];
+
+        const title = $('.q-title', card);
+        const name  = `q${iQ}`;
+        const picked = card.querySelector(`input[name="${name}"]:checked`);
+
+        const pickedIndex = picked ? Number(picked.value) : null;
+        const ansIndex = Number(q.answer);
+
+        const baseHtml = title.getAttribute('data-base-html') || title.innerHTML;
+
+        if(pickedIndex === null){
+          title.innerHTML = `${baseHtml} <span class="warnTxt">⚠ Chưa chọn</span>`;
+        }else if(pickedIndex === ansIndex){
+          correct++;
+          title.innerHTML = `${baseHtml} <span class="good">✔ Đúng</span>`;
+        }else{
+          title.innerHTML = `${baseHtml} <span class="bad">✘ Sai</span>`;
+        }
+
+        // hiện đáp án đúng (và bạn chọn)
+        const result = $('.result', card);
+        const correctLetter = String.fromCharCode(65 + ansIndex);
+        const pickedLetter  = pickedIndex === null ? '—' : String.fromCharCode(65 + pickedIndex);
+
+        result.innerHTML = `Đáp án đúng: <b>${correctLetter}</b> • Bạn chọn: <b>${pickedLetter}</b>`;
+
+        // nếu có giải thích trong JSON thì show khi chấm
+        const exWrap = $('.explain-wrap', card);
+        if(exWrap && exWrap.innerHTML.trim()){
+          exWrap.style.display = 'block';
+        }
+      });
+
+      setScore(correct, total);
+      setStatus(`Đã chấm xong: ${correct}/${total}`);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // -------------------------
+    // Boot
+    // -------------------------
+    window.addEventListener('DOMContentLoaded', ()=>{
+      $('#btnRetryNoShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA, false));
+      $('#btnRetryShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA, true));
+      $('#btnGrade').addEventListener('click', grade);
+      $('#btnClearMarks').addEventListener('click', ()=>{
+        clearMarks();
+        setScore(0, CURRENT_DATA?.mcqs?.length ?? 0);
+        setStatus('Đã xóa nhãn đúng/sai.');
+      });
+
+      loadData();
     });
-
-    const scoreTag = document.querySelector('#score .score');
-    scoreTag.textContent = `${correct}/${total}`;
-  }
-
-  // expose current data to grade()
-  function setCurrentData(d){ window.__DATA_CURRENT = d; }
-
-  // Hook buttons
-  window.addEventListener('DOMContentLoaded', ()=>{
-    document.getElementById('btnRetryNoShuffle').addEventListener('click', ()=>render(ORIGINAL_DATA,false));
-    document.getElementById('btnRetryShuffle').addEventListener('click', ()=>render(ORIGINAL_DATA,true));
-    document.getElementById('btnGrade').addEventListener('click', grade);
-    loadData().then(()=> setCurrentData(ORIGINAL_DATA));
-  });
   </script>
 </body>
 </html>
-
