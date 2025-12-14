@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ôn Tập Cuối Học Kì I – Tin học 8 (KNTT)</title>
+  <title>Ôn tập Cuối Học Kỳ I - Tin học 8</title>
   <style>
     :root{
       --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --muted:#475569;
@@ -29,7 +29,6 @@
     .muted{color:var(--muted)}
     .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:999px;padding:4px 10px;background:#eef2ff;color:#3730a3}
     .score{font-weight:800}
-    .footer-note{margin-top:22px;color:var(--muted);font-size:13px}
     .good{color:var(--green)} .bad{color:var(--red)} .warnTxt{color:var(--amber)}
     .error{background:#fee2e2;border:1px solid #fecaca;color:#7f1d1d;padding:12px;border-radius:12px}
     .tiny{font-size:13px}
@@ -37,8 +36,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>Ôn Tập Cuối Học Kì I – Tin học 8</h1>
-    <div class="sub">Theo SGK <b>Kết nối tri thức với cuộc sống</b>. Có xáo câu/đáp án và chấm điểm.</div>
+    <h1>Ôn tập Cuối Học Kỳ I Tin học 8</h1>
+    <div class="sub">Có xáo câu/đáp án và chấm điểm. (Bản “siêu chắc” chống lỗi đường dẫn & JSON)</div>
 
     <div class="toolbar">
       <button id="btnRetryNoShuffle" class="btn">🔁 Làm lại (giữ thứ tự)</button>
@@ -50,184 +49,241 @@
     </div>
 
     <div id="quiz"></div>
-    <div class="footer-note">Mẹo: đọc kĩ câu hỏi, soi “từ khóa” đúng.</div>
   </div>
 
-  <script>
-    let ORIGINAL_DATA = null; // { mcqs:[...] }
-    let CURRENT_DATA  = null;
+<script>
+let ORIGINAL_DATA=null, CURRENT_DATA=null;
 
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
-    const clone = o => JSON.parse(JSON.stringify(o));
+const $ = (s, r=document)=>r.querySelector(s);
+const $$ = (s, r=document)=>[...r.querySelectorAll(s)];
+const clone = o => JSON.parse(JSON.stringify(o));
 
-    function escapeHtml(s){
-      return String(s ?? '')
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
-    }
+function escapeHtml(s){
+  return String(s ?? '')
+    .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+    .replaceAll('"','&quot;').replaceAll("'","&#039;");
+}
+function shuffleArray(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
+function setStatus(msg){ $('#status').textContent = msg || ''; }
+function setScore(c,t){ $('#score .score').textContent = `${c}/${t}`; }
 
-    function shuffleArray(a){
-      for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
+function normalizeImagePath(p){
+  if(!p) return null;
+  if(p.startsWith('data/')) return p;
+  if(p.startsWith('images/')) return 'data/' + p; // repo bạn đang để ảnh trong data/images/...
+  return p;
+}
+
+// Chấp nhận 2 format:
+// (1) { mcqs:[{stem, options:[{text|image}], answer, img?}], essay?:[] }
+// (2) mảng [{question, choices:[{text,image?}], answer:"A"|0|null, questionImage?}]
+function normalize(raw){
+  if(raw && typeof raw === 'object' && Array.isArray(raw.mcqs)){
+    raw.mcqs.forEach(q=>{
+      if(q.img) q.img = normalizeImagePath(q.img);
+      q.options = (q.options||[]).map(o=>{
+        if(o?.image) o.image = normalizeImagePath(o.image);
+        return o;
+      });
+    });
+    return raw;
+  }
+  if(Array.isArray(raw)){
+    const mcqs = raw.map(item=>{
+      const stem = item.question ?? item.stem ?? '';
+      const img  = normalizeImagePath(item.questionImage ?? item.img);
+      const options = (item.choices || item.options || []).map(ch=>{
+        return {
+          text: ch.text ?? ch,
+          image: normalizeImagePath(ch.image)
+        };
+      });
+
+      let ans = item.answer;
+      let answerIndex = null;
+      if(typeof ans === 'number') answerIndex = ans;
+      if(typeof ans === 'string'){
+        const map={A:0,B:1,C:2,D:3};
+        const s=ans.trim().toUpperCase();
+        if(map[s]!==undefined) answerIndex = map[s];
       }
-    }
+      // nếu null => không chấm (nhưng vẫn hiển thị câu)
+      return { id:item.id ?? '', stem, img, options, answer: answerIndex };
+    });
+    return { mcqs, essay: [] };
+  }
+  return { mcqs: [], essay: [] };
+}
 
-    // options là mảng object: {text?, image?}
-    function shuffleOptions(q){
+async function fetchJsonTry(url){
+  const bust = (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  const u = url + bust;
+  const res = await fetch(u, {cache:'no-store'});
+  if(!res.ok) throw new Error(`HTTP ${res.status} khi tải ${url}`);
+  return await res.json();
+}
+
+async function loadDataRobust(){
+  const candidates = ['data/tin8.json','./data/tin8.json','tin8.json','./tin8.json'];
+  let lastErr = null;
+
+  for(const u of candidates){
+    try{
+      setStatus('Đang tải: ' + u);
+      const raw = await fetchJsonTry(u);
+      const data = normalize(raw);
+      if(!data.mcqs || !Array.isArray(data.mcqs)) throw new Error('JSON không có mcqs hợp lệ');
+      ORIGINAL_DATA = data;
+      render(ORIGINAL_DATA,false);
+      setStatus('Đã tải OK từ: ' + u);
+      return;
+    }catch(e){
+      lastErr = e;
+    }
+  }
+
+  // fail all
+  $('#quiz').innerHTML = `
+    <div class="card error">
+      <b>Lỗi tải dữ liệu.</b>
+      <div class="tiny">Không load được tin8.json theo các đường dẫn: <code>${escapeHtml(candidates.join(', '))}</code></div>
+      <div class="tiny"><b>Chi tiết:</b> ${escapeHtml(lastErr?.message || 'Unknown error')}</div>
+      <div class="tiny">Mẹo: mở thử trực tiếp <code>/data/tin8.json</code> trên trình duyệt để xem có 404 hoặc lỗi JSON.</div>
+    </div>
+  `;
+  setStatus('Lỗi tải dữ liệu.');
+  setScore(0,0);
+}
+
+function render(raw, doShuffle){
+  const data = clone(raw);
+  if(doShuffle){
+    shuffleArray(data.mcqs);
+    data.mcqs.forEach(q=>{
+      // shuffle options
       const pairs = q.options.map((opt,i)=>({opt,i}));
       shuffleArray(pairs);
       q.options = pairs.map(p=>p.opt);
-      q.answer  = pairs.findIndex(p=>p.i===q.answer);
-    }
-
-    function setStatus(msg){ $('#status').textContent = msg || ''; }
-    function setScore(correct, total){ $('#score .score').textContent = `${correct}/${total}`; }
-
-    async function loadData(){
-      try{
-        setStatus('Đang tải dữ liệu...');
-        const res = await fetch('data/tin8.json', {cache:'no-store'});
-        if(!res.ok) throw new Error(`Không tải được data/tin8.json (HTTP ${res.status})`);
-        ORIGINAL_DATA = await res.json();
-        render(ORIGINAL_DATA, false);
-        setStatus('Đã tải xong.');
-      }catch(err){
-        console.error(err);
-        $('#quiz').innerHTML = `
-          <div class="card error">
-            <b>Lỗi tải dữ liệu.</b>
-            <div class="tiny">Kiểm tra <code>data/tin8.json</code> có đúng vị trí và JSON hợp lệ.</div>
-            <div class="tiny">Chi tiết: ${escapeHtml(err.message)}</div>
-          </div>
-        `;
-        setStatus('Lỗi tải dữ liệu.');
-        setScore(0,0);
+      if(q.answer!==null && q.answer!==undefined){
+        q.answer = pairs.findIndex(p=>p.i===q.answer);
       }
-    }
-
-    function render(raw, doShuffle){
-      const data = clone(raw);
-      if(doShuffle){
-        shuffleArray(data.mcqs);
-        data.mcqs.forEach(shuffleOptions);
-      }
-      CURRENT_DATA = data;
-      buildQuiz(CURRENT_DATA);
-      clearMarks();
-      setScore(0, CURRENT_DATA.mcqs.length);
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
-
-    function buildQuiz(data){
-      const root = $('#quiz');
-      root.innerHTML = '';
-
-      root.insertAdjacentHTML('beforeend', `
-        <div class="card">
-          <div class="q-title">PHẦN TRẮC NGHIỆM</div>
-          <div class="muted">Chọn 1 đáp án đúng cho mỗi câu.</div>
-        </div>
-      `);
-
-      data.mcqs.forEach((q, idx)=>{
-        const qid = `q${idx}`;
-        const imgHtml = q.img ? `<img class="q-img" src="${escapeHtml(q.img)}" alt="minh họa câu ${idx+1}">` : '';
-
-        const optsHtml = q.options.map((opt, oi)=>{
-          const label = String.fromCharCode(65+oi);
-          const body = opt.image
-            ? `<img src="${escapeHtml(opt.image)}" alt="Đáp án ${label}">`
-            : `<span>${escapeHtml(opt.text ?? '')}</span>`;
-          return `
-            <label class="opt">
-              <input type="radio" name="${qid}" value="${oi}"/>
-              <span><b>${label}.</b> ${body}</span>
-            </label>
-          `;
-        }).join('');
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.qindex = String(idx);
-
-        card.innerHTML = `
-          <div class="q-title">Câu ${idx+1}: ${escapeHtml(q.stem)}</div>
-          ${imgHtml}
-          <div>${optsHtml}</div>
-          <div class="result tiny muted" style="margin-top:10px"></div>
-        `;
-        root.appendChild(card);
-      });
-    }
-
-    function clearMarks(){
-      $$('.card[data-qindex]').forEach(card=>{
-        const title = $('.q-title', card);
-        const base = title.getAttribute('data-base-html');
-        if(base){
-          title.innerHTML = base;
-        }else{
-          title.setAttribute('data-base-html', title.innerHTML);
-        }
-        $('.result', card).textContent = '';
-      });
-    }
-
-    function grade(){
-      if(!CURRENT_DATA || !Array.isArray(CURRENT_DATA.mcqs)) return;
-
-      clearMarks();
-
-      let correct = 0;
-      const total = CURRENT_DATA.mcqs.length;
-
-      $$('.card[data-qindex]').forEach(card=>{
-        const iQ = Number(card.dataset.qindex);
-        const q  = CURRENT_DATA.mcqs[iQ];
-
-        const title = $('.q-title', card);
-        const name  = `q${iQ}`;
-        const picked = card.querySelector(`input[name="${name}"]:checked`);
-        const pickedIndex = picked ? Number(picked.value) : null;
-
-        const ansIndex = Number(q.answer);
-        const baseHtml = title.getAttribute('data-base-html') || title.innerHTML;
-
-        if(pickedIndex === null){
-          title.innerHTML = `${baseHtml} <span class="warnTxt">⚠ Chưa chọn</span>`;
-        }else if(pickedIndex === ansIndex){
-          correct++;
-          title.innerHTML = `${baseHtml} <span class="good">✔ Đúng</span>`;
-        }else{
-          title.innerHTML = `${baseHtml} <span class="bad">✘ Sai</span>`;
-        }
-
-        const correctLetter = String.fromCharCode(65 + ansIndex);
-        const pickedLetter  = pickedIndex === null ? '—' : String.fromCharCode(65 + pickedIndex);
-        $('.result', card).innerHTML = `Đáp án đúng: <b>${correctLetter}</b> • Bạn chọn: <b>${pickedLetter}</b>`;
-      });
-
-      setScore(correct, total);
-      setStatus(`Đã chấm xong: ${correct}/${total}`);
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
-
-    window.addEventListener('DOMContentLoaded', ()=>{
-      $('#btnRetryNoShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA, false));
-      $('#btnRetryShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA, true));
-      $('#btnGrade').addEventListener('click', grade);
-      $('#btnClearMarks').addEventListener('click', ()=>{
-        clearMarks();
-        setScore(0, CURRENT_DATA?.mcqs?.length ?? 0);
-        setStatus('Đã xóa nhãn đúng/sai.');
-      });
-      loadData();
     });
-  </script>
+  }
+  CURRENT_DATA = data;
+  buildQuiz(CURRENT_DATA);
+  clearMarks();
+  const total = CURRENT_DATA.mcqs.length;
+  setScore(0,total);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function buildQuiz(data){
+  const root = $('#quiz');
+  root.innerHTML = `
+    <div class="card">
+      <div class="q-title">PHẦN TRẮC NGHIỆM</div>
+      <div class="muted">Chọn 1 đáp án đúng cho mỗi câu.</div>
+    </div>
+  `;
+
+  data.mcqs.forEach((q,idx)=>{
+    const qid = `q${idx}`;
+    const imgHtml = q.img ? `<img class="q-img" src="${escapeHtml(normalizeImagePath(q.img))}" alt="minh họa">` : '';
+    const optsHtml = (q.options||[]).map((opt,oi)=>{
+      const label = String.fromCharCode(65+oi);
+      const body = opt.image
+        ? `<img src="${escapeHtml(normalizeImagePath(opt.image))}" alt="Đáp án ${label}">`
+        : `<span>${escapeHtml(opt.text ?? '')}</span>`;
+      return `
+        <label class="opt">
+          <input type="radio" name="${qid}" value="${oi}">
+          <span><b>${label}.</b> ${body}</span>
+        </label>
+      `;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.qindex = String(idx);
+    card.innerHTML = `
+      <div class="q-title">Câu ${idx+1}: ${escapeHtml(q.stem)}</div>
+      ${imgHtml}
+      <div>${optsHtml}</div>
+      <div class="result tiny muted" style="margin-top:10px"></div>
+    `;
+    root.appendChild(card);
+  });
+}
+
+function clearMarks(){
+  $$('.card[data-qindex]').forEach(card=>{
+    const title = $('.q-title',card);
+    const base = title.getAttribute('data-base-html');
+    if(base) title.innerHTML = base;
+    else title.setAttribute('data-base-html', title.innerHTML);
+    $('.result',card).textContent='';
+  });
+}
+
+function grade(){
+  if(!CURRENT_DATA?.mcqs?.length) return;
+  clearMarks();
+
+  let correct=0, total=0;
+
+  $$('.card[data-qindex]').forEach(card=>{
+    const i = Number(card.dataset.qindex);
+    const q = CURRENT_DATA.mcqs[i];
+    const title = $('.q-title',card);
+    const base = title.getAttribute('data-base-html') || title.innerHTML;
+
+    const picked = card.querySelector(`input[name="q${i}"]:checked`);
+    const pickedIndex = picked ? Number(picked.value) : null;
+
+    if(q.answer===null || q.answer===undefined){
+      title.innerHTML = `${base} <span class="warnTxt">⚠ Chưa có đáp án</span>`;
+      $('.result',card).textContent = pickedIndex===null ? 'Bạn chưa chọn.' : `Bạn chọn: ${String.fromCharCode(65+pickedIndex)}.`;
+      return;
+    }
+
+    total++;
+    const ans = Number(q.answer);
+
+    if(pickedIndex===null){
+      title.innerHTML = `${base} <span class="warnTxt">⚠ Chưa chọn</span>`;
+    }else if(pickedIndex===ans){
+      correct++;
+      title.innerHTML = `${base} <span class="good">✔ Đúng</span>`;
+    }else{
+      title.innerHTML = `${base} <span class="bad">✘ Sai</span>`;
+    }
+
+    const correctLetter = String.fromCharCode(65+ans);
+    const pickedLetter = pickedIndex===null ? '—' : String.fromCharCode(65+pickedIndex);
+    $('.result',card).innerHTML = `Đáp án đúng: <b>${correctLetter}</b> • Bạn chọn: <b>${pickedLetter}</b>`;
+  });
+
+  setScore(correct,total);
+  setStatus(`Đã chấm: ${correct}/${total}`);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  $('#btnRetryNoShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA,false));
+  $('#btnRetryShuffle').addEventListener('click', ()=> render(ORIGINAL_DATA,true));
+  $('#btnGrade').addEventListener('click', grade);
+  $('#btnClearMarks').addEventListener('click', ()=>{
+    clearMarks();
+    setScore(0, CURRENT_DATA?.mcqs?.length ?? 0);
+    setStatus('Đã xóa nhãn.');
+  });
+  loadDataRobust();
+});
+</script>
 </body>
 </html>
